@@ -9,15 +9,27 @@
         android:orientation="vertical">
     <TextView
             android:id="@+id/tv_text"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Hello World!"
+            android:textSize="@dimen/font_large_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:gravity="center"
+<<<<<<< HEAD
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:textSize="@dimen/font_large_24"/>
+=======
+
+    />
+
+
+>>>>>>> df721b2c025389ba4864aef9782fa02fd60bc42d
     <ImageView
             android:id="@+id/iv_bender"
             android:layout_width="match_parent"
@@ -32,8 +44,12 @@
             android:layout_marginTop="@dimen/spacing_normal_16">
         <EditText
                 android:id="@+id/et_message"
+<<<<<<< HEAD
                 android:imeOptions="actionDone"
                 android:layout_width="0dp"
+=======
+                android:layout_width="100dp"
+>>>>>>> df721b2c025389ba4864aef9782fa02fd60bc42d
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:lines="1"
@@ -43,6 +59,7 @@
                 android:paddingTop="@dimen/spacing_normal_16"
                 android:paddingBottom="@dimen/spacing_normal_16"
                 android:layout_marginLeft="@dimen/spacing_normal_16"
+<<<<<<< HEAD
                 android:layout_marginRight="@dimen/spacing_normal_16"/>
         <ImageView
                 android:id="@+id/iv_send"
@@ -51,6 +68,19 @@
                 android:src="@drawable/ic_send_black_24dp"
                 android:layout_gravity="center"
                 android:layout_marginRight="@dimen/spacing_normal_16"/>
+=======
+                android:layout_marginRight="@dimen/spacing_normal_16"
+        />
+
+        <ImageView
+               android:id="@+id/iv_send"
+               android:src="@drawable/ic_send_black_24dp"
+               android:layout_gravity="center"
+               android:layout_marginRight="@dimen/spacing_normal_16"
+               android:layout_height="@dimen/image_button_size"
+               android:layout_width="@dimen/image_button_size"/>
+
+>>>>>>> df721b2c025389ba4864aef9782fa02fd60bc42d
     </LinearLayout>
 
 </LinearLayout>

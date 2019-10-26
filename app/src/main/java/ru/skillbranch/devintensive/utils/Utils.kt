@@ -7,7 +7,6 @@ object Utils {
             return Pair(null, null)
 
         val parts : List<String>? = fullName?.split(" ")
-
         val firstName : String? = parts?.getOrNull(0)
         val lastName : String? = parts?.getOrNull(1)
 

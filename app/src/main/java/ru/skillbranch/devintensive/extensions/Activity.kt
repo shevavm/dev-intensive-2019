@@ -2,6 +2,7 @@ package ru.skillbranch.devintensive.extensions
 
 import android.app.Activity
 import android.graphics.Rect
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 
 fun Activity.hideKeyboard() {
@@ -13,11 +14,10 @@ fun Activity.hideKeyboard() {
 }
 
 fun Activity.isKeyboardOpen(): Boolean {
+    val rootView = window.decorView.findViewById<View>(android.R.id.content)
     val rect = Rect()
-    window.decorView.getWindowVisibleDisplayFrame(rect)
-    val screenHeight = window.decorView.rootView.height
-    val difference = screenHeight - (rect.bottom - rect.top)
-    return difference > 200
+    rootView.getWindowVisibleDisplayFrame(rect)
+    return (rootView.rootView.height - rect.height() > 500)
 }
 
 fun Activity.isKeyboardClosed(): Boolean {
