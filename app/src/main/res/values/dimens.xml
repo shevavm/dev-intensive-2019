@@ -10,11 +10,8 @@
 <dimen name="spacing_small_8">8dp</dimen>
 <dimen name="spacing_tiny_4">4dp</dimen>
 <!-- typical sizes of views -->
-<<<<<<< HEAD
 <dimen name="imageButton_large_24">32dp</dimen>
 <dimen name="imageButton_normal_16">16dp</dimen>
 <dimen name="imageButton_small_8">8dp</dimen>
-=======
 <dimen name="image_button_size">24dp</dimen>
->>>>>>> df721b2c025389ba4864aef9782fa02fd60bc42d
 </resources>
