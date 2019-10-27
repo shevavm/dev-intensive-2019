@@ -89,7 +89,7 @@ abstract data class User(
         fun lastVisit(lastVisit : Date?) = apply {this.lastVisit = lastVisit}
         fun isOnline(isOnline : Boolean) = apply {this.isOnline = isOnline}
 
-        fun build() = User(this)
+        //fun build() = User(this)
     }
 
 }
