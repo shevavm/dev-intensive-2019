@@ -3,18 +3,17 @@ package ru.skillbranch.devintensive.models
 import ru.skillbranch.devintensive.utils.Utils
 import java.util.*
 
-abstract data class User(
-    val id: String,
-    var firstName: String?,
-    var lastName: String?,
-    var avatar: String?,
-    var rating: Int = 0,
-    var respect: Int = 0,
-    val lastVisit: Date? = Date(),
-    var isOnline: Boolean = false
+data class User(
+    val id : String,
+    var firstName : String?,
+    var lastName : String?,
+    var avatar : String?,
+    var rating : Int = 0,
+    var respect : Int = 0,
+    val lastVisit : Date? = Date(),
+    var isOnline : Boolean = false
 )
 {
-    var introBit: String
     constructor(id:String, firstName:String?, lastName:String?) : this(
         id = id,
         firstName = firstName,
@@ -53,14 +52,14 @@ abstract data class User(
     }
 
     private constructor(builder: Builder) : this(
-            builder.id,
-            builder.firstName,
-            builder.lastName,
-            builder.avatar,
-            builder.rating,
-            builder.respect,
-            builder.lastVisit,
-            builder.isOnline)
+        builder.id,
+        builder.firstName,
+        builder.lastName,
+        builder.avatar,
+        builder.rating,
+        builder.respect,
+        builder.lastVisit,
+        builder.isOnline)
 
     class Builder {
         var id: String = "0"
@@ -89,7 +88,7 @@ abstract data class User(
         fun lastVisit(lastVisit : Date?) = apply {this.lastVisit = lastVisit}
         fun isOnline(isOnline : Boolean) = apply {this.isOnline = isOnline}
 
-        //fun build() = User(this)
+        fun build() = User(this)
     }
 
 }
