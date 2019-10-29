@@ -1,113 +1,185 @@
 package ru.skillbranch.devintensive.ui.profile
 
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.provider.ContactsContract
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
 import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.Bender
+import ru.skillbranch.devintensive.utils.Utils
 
-class ProfileActivity : AppCompatActivity(), View.OnClickListener {
-    lateinit var benderImage: ImageView
-    lateinit var textTxt: TextView
-    lateinit var messageEt: EditText
-    lateinit var sendBtn: ImageView
-    lateinit var benderObj: Bender
+class ProfileActivity : AppCompatActivity() {
 
-    override fun onClick(v: View?) {
-        if (v?.id == R.id.iv_send) {
-            if (benderObj.question.validate(messageEt.text.toString())) {
-                val (phase, color) = benderObj.listenAnswer(messageEt.text.toString().toLowerCase())
-                messageEt.setText("")
-                val (r, g, b) = color
-                benderImage.setColorFilter(Color.rgb(r, g, b), PorterDuff.Mode.MULTIPLY)
-                textTxt.text = phase
-            } else {
-                val str_ = when(benderObj.question){
-                    Bender.Question.NAME -> "Имя должно начинаться с заглавной буквы"
-                    Bender.Question.PROFESSION -> "Профессия должна начинаться со строчной буквы"
-                    Bender.Question.MATERIAL -> "Материал не должен содержать цифр"
-                    Bender.Question.BDAY -> "Год моего рождения должен содержать только цифры"
-                    Bender.Question.SERIAL -> "Серийный номер содержит только цифры, и их 7"
-                    else -> "На этом все, вопросов больше нет"
-                } + "\n" + benderObj.question.question
-                textTxt.text = str_
-                messageEt.setText("")
-            }
-        }
+    companion object {
+        const val IS_EDIT_MODE = "IS_EDIT_MODE"
     }
 
-    private fun initialize() {
-        setContentView(R.layout.activity_profile)
-        benderImage = iv_bender
-        textTxt = tv_text
-        messageEt = et_message
-        sendBtn = iv_send
-    }
-
-    private fun loadFromBundle(savedInstanceState: Bundle?) {
-        val status = savedInstanceState?.getString("STATUS") ?: Bender.Status.NORMAL.name // после elvis - default-ы
-        val question = savedInstanceState?.getString("QUESTION") ?: Bender.Question.NAME.name
-        benderObj = Bender(Bender.Status.valueOf(status), Bender.Question.valueOf(question))
-
-        val(r, g, b) = benderObj.status.color
-        benderImage.setColorFilter(Color.rgb(r, g, b), PorterDuff.Mode.MULTIPLY)
-        textTxt.text = benderObj.askQuestion()
-
-    }
+    private lateinit var viewModel: ProfileViewModel
+    var isEditMode = false
+    lateinit var viewFields: Map<String, TextView>
+    private var userInitials: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        initialize()
-        loadFromBundle(savedInstanceState)
+        setContentView(R.layout.activity_profile)
+        initViews(savedInstanceState)
+        initViewModel()
+    }
 
-        sendBtn.setOnClickListener(this)
-        messageEt.setRawInputType(InputType.TYPE_CLASS_TEXT)
-        messageEt.setOnEditorActionListener { _, actionId, _ ->
-            if(actionId == EditorInfo.IME_ACTION_DONE)
-                sendBtn.performClick()
-            false
+    private fun initViewModel() {
+        viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
+        viewModel.getProfileData().observe(this, Observer { updateUI(it) })
+        viewModel.getTheme().observe(this, Observer { updateTheme(it) })
+        viewModel.getRepositoryError().observe(this, Observer { updateRepoError(it) })
+        viewModel.getIsRepoError().observe(this, Observer { updateRepository(it) })
+    }
+
+    private fun updateRepository(isError: Boolean) {
+        if (isError) et_repository.text.clear()
+    }
+
+    private fun updateRepoError(isError: Boolean) {
+        wr_repository.isErrorEnabled = isError
+        wr_repository.error = if (isError) "Невалидный адрес репозитория" else null
+    }
+
+    private fun updateTheme(mode: Int) {
+        delegate.setLocalNightMode(mode)
+    }
+
+    private fun updateUI(profile: ContactsContract.Profile) {
+        profile.toMap().also {
+            for ((k, v) in viewFields) {
+                v.text = it[k].toString()
+            }
         }
-        Log.d("M_MainActivity","onCreate")
+        updateAvatar(profile)
     }
 
-    override fun onRestart() {
-        super.onRestart()
-        Log.d("M_MainActivity","onRestart")
+    private fun initViews(savedInstanceState: Bundle?) {
+        viewFields = mapOf(
+            "nickName" to tv_nick_name,
+            "rank" to tv_rank,
+            "firstName" to et_first_name,
+            "lastName" to et_last_name,
+            "about" to et_about,
+            "repository" to et_repository,
+            "rating" to tv_rating,
+            "respect" to tv_respect)
+
+        isEditMode = savedInstanceState?.getBoolean(IS_EDIT_MODE) ?: false
+        showCurrentMode(isEditMode)
+
+        btn_edit.setOnClickListener {
+            viewModel.onRepoEditCompleted(wr_repository.isErrorEnabled)
+
+            if (isEditMode) saveProfileInfo()
+            isEditMode = isEditMode.not()
+            showCurrentMode(isEditMode)
+        }
+
+        btn_switch_theme.setOnClickListener {
+            viewModel.switchTheme()
+        }
+
+        et_repository.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { }
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.onRepositoryChanged(s.toString())
+            }
+        })
     }
 
-    override fun onStart() {
-        super.onStart()
-        Log.d("M_MainActivity","onStart")
+    private fun showCurrentMode(isEdit: Boolean) {
+        val info = viewFields.filter {
+            setOf("firstName", "lastName", "about", "repository" ).contains(it.key)
+        }
+
+        info.forEach {
+            val v = it.value as EditText
+            v.isFocusable = isEdit
+            v.isFocusableInTouchMode = isEdit
+            v.isEnabled = isEdit
+            v.background.alpha = if (isEdit) 255 else 0
+        }
+
+        ic_eye.visibility = if (isEdit) View.GONE else View.VISIBLE
+        wr_about.isCounterEnabled = isEdit
+
+        with(btn_edit){
+            val filter: ColorFilter? = if (isEdit){
+                PorterDuffColorFilter(getThemeAccentColor(), PorterDuff.Mode.SRC_IN)
+            }
+            else null
+
+            val icon =
+                if (isEdit)
+                    resources.getDrawable(R.drawable.ic_save_black_24dp, theme)
+                else resources.getDrawable(R.drawable.ic_edit_black_24dp, theme)
+
+            background.colorFilter = filter
+            setImageDrawable(icon)
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.d("M_MainActivity","onResume")
+    private fun getThemeAccentColor(): Int {
+        val value = TypedValue()
+        theme.resolveAttribute(R.attr.colorAccent, value, true)
+        return value.data
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.d("M_MainActivity","onPause")
+    private fun saveProfileInfo(){
+        ContactsContract.Profile(
+            firstName = et_first_name.text.toString(),
+            lastName = et_last_name.text.toString(),
+            about = et_about.text.toString(),
+            repository = et_repository.text.toString()
+        ).apply {
+            viewModel.saveProfileData(this)
+        }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("M_MainActivity","onDestroy")
+    private fun updateAvatar(profile: ContactsContract.Profile){
+        Utils.toInitials(profile.firstName, profile.lastName)?.let {
+            if (it != userInitials) {
+                val avatar = getAvatarBitmap(it)
+                iv_avatar.setImageBitmap(avatar)
+            }
+        } ?: iv_avatar.setImageResource(R.drawable.avatar_default)
+    }
+
+    private fun getAvatarBitmap(text: String): Bitmap {
+        val color = TypedValue()
+        theme.resolveAttribute(R.attr.colorAccent, color, true)
+
+        return TextBitmapBuilder(iv_avatar.layoutParams.width, iv_avatar.layoutParams.height)
+            .setBackgroundColor(color.data)
+            .setText(text)
+            .setTextSize(Utils.convertSpToPx(this, 48))
+            .setTextColor(Color.WHITE)
+            .build()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        // Extra store info
-        outState?.putString("STATUS", benderObj.status.name)
-        outState?.putString("QUESTION", benderObj.question.name)
+        outState?.putBoolean(IS_EDIT_MODE, isEditMode)
     }
 }
