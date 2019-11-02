@@ -1,9 +1,6 @@
 package ru.skillbranch.devintensive.ui.profile
 
-import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.ColorFilter
-import android.graphics.PorterDuff
+import android.graphics.*
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.text.Editable
@@ -20,9 +17,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
+import org.w3c.dom.Text
 import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.Bender
 import ru.skillbranch.devintensive.utils.Utils
+import androidx.compose.*
+import androidx.ui.core.*
+
+@Composable
+fun Greeting(name: String) {
+    Text ("Hello $name!")
+}
 
 class ProfileActivity : AppCompatActivity() {
 
