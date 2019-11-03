@@ -231,17 +231,3 @@
     </LinearLayout>
 
 </LinearLayout>
-            //В разметке должны быть следующие идентификаторы View элементов:
-            //Кнопка переключения в режим редактирования (ImageButton) @+id/btn_edit
-            //Кнопка переключения режима Day/Night (ImageButton) @+id/btn_switch_theme
-            //Аватар пользователя (ImageView/CircleImageView) @+id/iv_avatar
-            //Псевдоним (TextView) @+id/tv_nick_name
-            //Ранг (TextView) @+id/tv_rank
-            //Рейтинг (TextView) @+id/tv_rating
-            //Уважение (TextView) @+id/tv_respect
-            //Имя (EditText) @+id/et_first_name
-            //Фамилия (EditText) @+id/et_last_name
-            //О себе (EditText) @+id/et_about
-            //Обертка над "О себе" (TextInputLayout) @+id/wr_about
-            //Репозиторий (EditText) @+id/et_repository
-            //Обертка над "Репозиторий" (TextInputLayout) @+id/wr_repository
