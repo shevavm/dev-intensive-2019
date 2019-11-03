@@ -4,14 +4,10 @@ import android.graphics.*
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.text.Editable
-import android.text.InputType
 import android.text.TextWatcher
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -19,7 +15,6 @@ import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
 import org.w3c.dom.Text
 import ru.skillbranch.devintensive.R
-import ru.skillbranch.devintensive.models.Bender
 import ru.skillbranch.devintensive.utils.Utils
 import androidx.compose.*
 import androidx.ui.core.*
