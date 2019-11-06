@@ -13,16 +13,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
-import org.w3c.dom.Text
 import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.utils.Utils
-import androidx.compose.*
-import androidx.ui.core.*
 
-@Composable
-fun Greeting(name: String) {
-    Text ("Hello $name!")
-}
 
 class ProfileActivity : AppCompatActivity() {
 
